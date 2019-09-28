@@ -5,12 +5,14 @@ namespace App\Filters\Course;
 use App\Filters\FilterAbstract;
 use Illuminate\Database\Eloquent\Builder;
 
-class AccessFilter extends FilterAbstract
+class TypeFilter extends FilterAbstract
 {
-	public function mappings(){
+	public function mappings()
+	{
 		return [
-			'free' => 1,
-			'premium' => 0
+			'theory' => 'theory',
+			'snippet' => 'snippet',
+			'project' => 'project',
 		];
 	}
 
@@ -18,10 +20,10 @@ class AccessFilter extends FilterAbstract
 	{
 		$value = $this->resolveFilterValue($value);
 
-		if($value === null){
+		if($value === null) {
 			return $builder;
 		}
 
-		return $builder->where('free', $value);
+		return $builder->where('type', $value);
 	}
 }
