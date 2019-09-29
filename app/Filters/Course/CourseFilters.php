@@ -5,7 +5,7 @@ namespace App\Filters\Course;
 use App\Filters\FiltersAbstract;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
-use App\Filters\Course\{AccessFilter, DifficultyFilter, TypeFilter, SubjectFilter};
+use App\Filters\Course\{AccessFilter, DifficultyFilter, TypeFilter, SubjectFilter, StartedFilter};
 
 class CourseFilters extends FiltersAbstract
 {
@@ -14,5 +14,6 @@ class CourseFilters extends FiltersAbstract
 		'difficulty' => DifficultyFilter::class,
 		'type' => TypeFilter::class,
 		'subject' => SubjectFilter::class,
+		'started' => StartedFilter::class,
 	];
 }
