@@ -10,6 +10,7 @@
 
                     <div class="card-body">
                         <course v-for="course in courses" :course="course" :key="course.id"></course>
+                        <pagination :meta="meta" v-on:pagination:switched="getCourses"></pagination>
                     </div>
                 </div>
             </div>
@@ -20,20 +21,34 @@
 <script>
     import Course from './partials/Course' 
     import Filters from './partials/Filters' 
+    import Pagination from '../pagination/Pagination' 
     export default {
         data() {
             return {
-                courses: []
+                courses: [],
+                meta: {}
             }
         },
         components: {
             Course,
-            Filters
+            Filters,
+            Pagination
         },
         mounted() {
-            axios.get('api/courses').then((res) => {
-                this.courses = res.data.data
-            })
+            this.getCourses()
+        },
+
+        methods: {
+            getCourses(page = this.$route.query.page) {
+                axios.get('api/courses', {
+                    params: {
+                        page
+                    }
+                }).then((res) => {
+                    this.courses = res.data.data
+                    this.meta = res.data.meta
+                })
+            }
         }
     }
 </script>
