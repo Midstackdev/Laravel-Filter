@@ -20,4 +20,12 @@ abstract class FilterAbstract
 		return Arr::get($this->mappings(), $key);
 	}
 
+	protected function resolveOrderDirection($direction)
+	{
+		return Arr::get([
+			'desc' => 'desc',
+			'asc' => 'asc',
+		], $direction, 'desc');
+	}
+
 }
