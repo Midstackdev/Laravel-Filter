@@ -18,4 +18,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/courses', 'CourseController@index')->name('courses');
+
+Route::get('/courses', function() {
+    return view('courses.index');
+});
+
+Route::group(['prefix' => 'api'], function() {
+
+	Route::get('/courses', 'Api\CourseController@index')->name('courses');
+});
