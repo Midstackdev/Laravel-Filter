@@ -11,7 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
 	protected $appends = [
-		'started'
+		'started',
+        'formattedAccess',
+        'formattedDifficulty',
+        'formattedType',
+        'formattedStarted',
 	];
 
 	protected $hidden = [
@@ -26,6 +30,26 @@ class Course extends Model
     public function subjects()
     {
     	return $this->morphToMany(Subject::class, 'subjectable');
+    }
+
+    public function getFormattedAccessAttribute()
+    {
+        return $this->free === 1 ? 'Free' : 'Premium';
+    }
+
+    public function getFormattedStartedAttribute()
+    {
+        return $this->started === true ? 'Started' : 'Not started';
+    }
+
+    public function getFormattedDifficultyAttribute()
+    {
+        return ucfirst($this->difficulty);
+    } 
+
+    public function getFormattedTypeAttribute()
+    {
+        return ucfirst($this->type);
     }
 
     public function getStartedAttribute()
