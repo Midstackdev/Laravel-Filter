@@ -1841,6 +1841,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_Course__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./partials/Course */ "./resources/js/components/courses/partials/Course.vue");
 /* harmony import */ var _partials_Filters__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./partials/Filters */ "./resources/js/components/courses/partials/Filters.vue");
 /* harmony import */ var _pagination_Pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../pagination/Pagination */ "./resources/js/components/pagination/Pagination.vue");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1871,6 +1883,14 @@ __webpack_require__.r(__webpack_exports__);
       meta: {}
     };
   },
+  watch: {
+    '$route.query': {
+      handler: function handler(query) {
+        this.getCourses(1, query);
+      },
+      deep: true
+    }
+  },
   components: {
     Course: _partials_Course__WEBPACK_IMPORTED_MODULE_0__["default"],
     Filters: _partials_Filters__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -1884,10 +1904,11 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.$route.query.page;
-      axios.get('api/courses', {
-        params: {
+      var query = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.$route.query;
+      axios.get('/api/courses', {
+        params: _objectSpread({
           page: page
-        }
+        }, query)
       }).then(function (res) {
         _this.courses = res.data.data;
         _this.meta = res.data.meta;
@@ -1940,6 +1961,14 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
 //
 //
 //
@@ -1957,7 +1986,8 @@ __webpack_require__.r(__webpack_exports__);
   props: ['endpoint'],
   data: function data() {
     return {
-      filters: {}
+      filters: {},
+      selectedFilters: _.omit(this.$route.query, ['page'])
     };
   },
   mounted: function mounted() {
@@ -1966,6 +1996,16 @@ __webpack_require__.r(__webpack_exports__);
     axios.get(this.endpoint).then(function (res) {
       _this.filters = res.data.data;
     });
+  },
+  methods: {
+    activateFilter: function activateFilter(key, value) {
+      this.selectedFilters = Object.assign({}, this.selectedFilters, _defineProperty({}, key, value));
+      this.$router.replace({
+        query: _objectSpread({}, this.selectedFilters, {
+          page: 1
+        })
+      });
+    }
   }
 });
 
@@ -2017,9 +2057,9 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$emit('pagination:switched', page);
       this.$router.replace({
-        query: {
+        query: Object.assign({}, this.$route.query, {
           page: page
-        }
+        })
       });
     },
     pageIsOutOfBounds: function pageIsOutOfBounds(page) {
@@ -37341,17 +37381,25 @@ var render = function() {
             "div",
             { staticClass: "card-body" },
             [
-              _vm._l(_vm.courses, function(course) {
-                return _c("course", {
-                  key: course.id,
-                  attrs: { course: course }
-                })
-              }),
-              _vm._v(" "),
-              _c("pagination", {
-                attrs: { meta: _vm.meta },
-                on: { "pagination:switched": _vm.getCourses }
-              })
+              _vm.courses.length
+                ? [
+                    _vm._l(_vm.courses, function(course) {
+                      return _c("course", {
+                        key: course.id,
+                        attrs: { course: course }
+                      })
+                    }),
+                    _vm._v(" "),
+                    _c("pagination", {
+                      attrs: { meta: _vm.meta },
+                      on: { "pagination:switched": _vm.getCourses }
+                    })
+                  ]
+                : [
+                    _vm._v(
+                      "\n                        No results found\n                    "
+                    )
+                  ]
             ],
             2
           )
@@ -37461,7 +37509,14 @@ var render = function() {
             "a",
             {
               staticClass: "list-group-item list-group-item-action",
-              attrs: { href: "#" }
+              class: { active: _vm.selectedFilters[key] === value },
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.activateFilter(key, value)
+                }
+              }
             },
             [_vm._v("\n\t  \t" + _vm._s(filter) + "\n\t  ")]
           )
