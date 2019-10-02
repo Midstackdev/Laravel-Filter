@@ -1982,6 +1982,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['endpoint'],
   data: function data() {
@@ -1989,6 +1999,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       filters: {},
       selectedFilters: _.omit(this.$route.query, ['page'])
     };
+  },
+  computed: {
+    filtersInUse: function filtersInUse() {
+      return !_.isEmpty(this.selectedFilters);
+    }
   },
   mounted: function mounted() {
     var _this = this;
@@ -2000,6 +2015,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   methods: {
     activateFilter: function activateFilter(key, value) {
       this.selectedFilters = Object.assign({}, this.selectedFilters, _defineProperty({}, key, value));
+      this.updateQueryString();
+    },
+    clearFilter: function clearFilter(key) {
+      this.selectedFilters = _.omit(this.selectedFilters, key);
+      this.updateQueryString();
+    },
+    clearFilters: function clearFilters() {
+      this.selectedFilters = {};
+      this.updateQueryString();
+    },
+    updateQueryString: function updateQueryString() {
       this.$router.replace({
         query: _objectSpread({}, this.selectedFilters, {
           page: 1
@@ -37390,10 +37416,7 @@ var render = function() {
                       })
                     }),
                     _vm._v(" "),
-                    _c("pagination", {
-                      attrs: { meta: _vm.meta },
-                      on: { "pagination:switched": _vm.getCourses }
-                    })
+                    _c("pagination", { attrs: { meta: _vm.meta } })
                   ]
                 : [
                     _vm._v(
@@ -37500,31 +37523,70 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "filters" },
-    _vm._l(_vm.filters, function(map, key) {
-      return _c(
-        "div",
-        { staticClass: "list-group mb-3" },
-        _vm._l(map, function(filter, value) {
-          return _c(
-            "a",
-            {
-              staticClass: "list-group-item list-group-item-action",
-              class: { active: _vm.selectedFilters[key] === value },
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return _vm.activateFilter(key, value)
+    [
+      _vm.filtersInUse
+        ? _c("p", [
+            _c(
+              "a",
+              {
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.clearFilters($event)
+                  }
                 }
-              }
-            },
-            [_vm._v("\n\t  \t" + _vm._s(filter) + "\n\t  ")]
-          )
-        }),
-        0
-      )
-    }),
-    0
+              },
+              [_vm._v("Clear All Filters")]
+            )
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm._l(_vm.filters, function(map, key) {
+        return _c(
+          "div",
+          { staticClass: "list-group mb-3" },
+          [
+            _vm._l(map, function(filter, value) {
+              return _c(
+                "a",
+                {
+                  staticClass: "list-group-item list-group-item-action",
+                  class: { active: _vm.selectedFilters[key] === value },
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      return _vm.activateFilter(key, value)
+                    }
+                  }
+                },
+                [_vm._v("\n\t  \t" + _vm._s(filter) + "\n\t  ")]
+              )
+            }),
+            _vm._v(" "),
+            _vm.selectedFilters[key]
+              ? _c(
+                  "a",
+                  {
+                    staticClass: "list-group-item list-group-item-info",
+                    attrs: { href: "" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.clearFilter(key)
+                      }
+                    }
+                  },
+                  [_vm._v("\n\t  \t× Clear Filter\n\t  ")]
+                )
+              : _vm._e()
+          ],
+          2
+        )
+      })
+    ],
+    2
   )
 }
 var staticRenderFns = []

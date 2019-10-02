@@ -1,5 +1,8 @@
 <template>
 	<div class="filters">
+		<p v-if=filtersInUse>
+			<a href="#" @click.prevent="clearFilters">Clear All Filters</a>
+		</p>
 		<div class="list-group mb-3" v-for="map, key in filters">
 		  <a href="#" 
 		  	class="list-group-item list-group-item-action"
@@ -8,6 +11,13 @@
 		  	@click.prevent="activateFilter(key, value)"
 		  >
 		  	{{filter}}
+		  </a>
+		  <a href=""
+			class="list-group-item list-group-item-info"
+			v-if="selectedFilters[key]"
+			@click.prevent="clearFilter(key)"
+		  >
+		  	&times; Clear Filter
 		  </a>
 		</div>
 	</div>	
@@ -24,6 +34,12 @@
 			}
 		},
 
+		computed: {
+			filtersInUse() {
+				return !_.isEmpty(this.selectedFilters)
+			}
+		},
+
 		mounted() {
 			axios.get(this.endpoint).then((res) => {
 				this.filters = res.data.data
@@ -34,6 +50,21 @@
 			activateFilter(key, value) {
 				this.selectedFilters = Object.assign({}, this.selectedFilters, {[key] : value})
 
+				this.updateQueryString()
+			},
+
+			clearFilter(key) {
+				this.selectedFilters = _.omit(this.selectedFilters, key)
+
+				this.updateQueryString()
+			},
+
+			clearFilters() {
+				this.selectedFilters = {}
+				this.updateQueryString()
+			},
+
+			updateQueryString() {
 				this.$router.replace({
 					query: {
 						...this.selectedFilters,
